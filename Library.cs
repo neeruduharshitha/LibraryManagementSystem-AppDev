@@ -27,3 +27,27 @@ public class Library{
         }
     }
 }
+
+public class Book {
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public int AvailableCopies { get; set; }
+
+    public Book(string title, string author, int availableCopies){
+        Title = title;
+        Author = author;
+        AvailableCopies = availableCopies;
+    }
+}
+
+public class Person {
+    public string Name { get; set; }
+    public int ID { get; set; }
+    public string Username { get; set; }
+
+    public Person(string name, int id, string username){
+        Name = name;
+        ID = id;
+        Username = username;
+    }
+}
