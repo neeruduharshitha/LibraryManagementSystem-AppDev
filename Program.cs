@@ -1,126 +1,42 @@
-﻿var credentialManager = new CredentialManager();
-var library = new Library();
+﻿﻿using System;
+class Program{
+    static void Main(string[] args){
+        Library library = new Library();
 
-// Seed admin
-credentialManager.Register("admin", "Admin@123");
+        //Create books and add to library
+        Book b1 = new Book("The Art of Data Strategy", "Liam Reynolds", "ISBN111", 4);
+        Book b2 = new Book("Business Insights with AI", "Olivia Carter", "ISBN222", 3);
+        Book b3 = new Book("Analytics in Action", "Nathan Brooks", "ISBN333", 6);
 
-bool running = true;
-string currentUser = null;
+        library.AddBook(b1);
+        library.AddBook(b2);
+        library.AddBook(b3);
 
-while(running){
-    Console.WriteLine("\n=== Library Credential Manager ===");
-    Console.WriteLine(currentUser == null ? "Not signed in" : $"Signed in as {currentUser}");
-    Console.WriteLine("1. Register");
-    Console.WriteLine("2. Login");
-    Console.WriteLine("3. Change Password");
-    Console.WriteLine("4. List Users");
-    Console.WriteLine("5. Add Book (requires login)");
-    Console.WriteLine("6. Add Patron (requires login)");
-    Console.WriteLine("7. Display Books");
-    Console.WriteLine("8. Display Patrons");
-    Console.WriteLine("9. Logout");
-    Console.WriteLine("0. Exit");
-    Console.Write("Choice: ");
-    var choice = Console.ReadLine();
+        // Create Students
+        Student s1 = new Student("Akhil", "akhil@usf.edu", "S001", "Business Analytics", 2026);
+        Student s2 = new Student("Sandeep", "sandeep@usf.edu", "S002", "Information Systems", 2025);
 
-    switch(choice){
-        case "1":
-            Console.Write("Username: ");
-            var regUser = Console.ReadLine();
-            Console.Write("Password: ");
-            var regPass = ReadPassword();
-            if(credentialManager.Register(regUser, regPass)) Console.WriteLine("Registered successfully.");
-            else Console.WriteLine("Register failed: user exists or invalid.");
-            break;
-        case "2":
-            Console.Write("Username: ");
-            var loginUser = Console.ReadLine();
-            Console.Write("Password: ");
-            var loginPass = ReadPassword();
-            if(credentialManager.Authenticate(loginUser, loginPass)){
-                currentUser = loginUser;
-                Console.WriteLine("Login successful.");
-            } else {
-                Console.WriteLine("Authentication failed.");
-            }
-            break;
-        case "3":
-            if(currentUser == null){ Console.WriteLine("Please log in first."); break; }
-            Console.Write("Old password: ");
-            var oldPass = ReadPassword();
-            Console.Write("New password: ");
-            var newPass = ReadPassword();
-            if(credentialManager.ChangePassword(currentUser, oldPass, newPass)) Console.WriteLine("Password changed.");
-            else Console.WriteLine("Change password failed.");
-            break;
-        case "4":
-            Console.WriteLine("Users:");
-            foreach(var user in credentialManager.GetUserList()) Console.WriteLine("- " + user);
-            break;
-        case "5":
-            if(currentUser == null){ Console.WriteLine("Please log in first."); break; }
-            Console.Write("Book title: ");
-            var title = Console.ReadLine();
-            Console.Write("Book author: ");
-            var author = Console.ReadLine();
-            Console.Write("Available copies: ");
-            if(int.TryParse(Console.ReadLine(), out int copies)){
-                library.AddBook(new Book(title, author, copies));
-                Console.WriteLine("Book added.");
-            } else {
-                Console.WriteLine("Invalid number.");
-            }
-            break;
-        case "6":
-            if(currentUser == null){ Console.WriteLine("Please log in first."); break; }
-            Console.Write("Patron name: ");
-            var name = Console.ReadLine();
-            Console.Write("Patron ID: ");
-            if(int.TryParse(Console.ReadLine(), out int id)){
-                Console.Write("Username for patron: ");
-                var pUser = Console.ReadLine();
-                library.AddPatron(new Person(name, id, pUser));
-                Console.WriteLine("Patron added.");
-            } else {
-                Console.WriteLine("Invalid ID.");
-            }
-            break;
-        case "7":
-            library.DisplayBooks();
-            break;
-        case "8":
-            library.DisplayPatrons();
-            break;
-        case "9":
-            currentUser = null;
-            Console.WriteLine("Logged out.");
-            break;
-        case "0":
-            running = false;
-            break;
-        default:
-            Console.WriteLine("Invalid choice.");
-            break;
+        //Create Staff
+        Staff st1= new Staff("Grandon Gill", "grandon@usf.edu", "ST001", "Librarian", "Library Services");
+       
+       //add to library
+        library.AddPatron(s1);
+        library.AddPatron(s2);
+        library.AddPatron(st1);
+
+        library.DisplayBooks();
+        library.DisplayPatrons();
+
+        Console.WriteLine("\nBorrowing Books...");
+
+        if (b2.BorrowBook())
+            Console.WriteLine("Sandeep borrowed 'Business Insights with AI'");
+
+        if (b3.BorrowBook())
+            Console.WriteLine("Akhil borrowed 'Analytics in Action'");
+
+        // Display updated books
+        Console.WriteLine("\nBooks after borrowing:");
+        library.DisplayBooks();
     }
-}
-
-static string ReadPassword(){
-    var sb = new StringBuilder();
-    while(true){
-        var key = Console.ReadKey(true);
-        if(key.Key == ConsoleKey.Enter){
-            Console.WriteLine();
-            break;
-        }
-        if(key.Key == ConsoleKey.Backspace && sb.Length > 0){
-            sb.Length--;
-            Console.Write("\b \b");
-            continue;
-        }
-        if(!char.IsControl(key.KeyChar)){
-            sb.Append(key.KeyChar);
-            Console.Write("*");
-        }
-    }
-    return sb.ToString();
 }
